@@ -27,11 +27,11 @@ public class TransferenciaController {
 
     @GetMapping
     @ResponseBody
-    public ResponseEntity<List<Transferencia>> getTransferencias(@RequestParam Long idConta,
-        @RequestParam Optional<String> dataTransferencia, @RequestParam Optional<String> nome) {
+    public ResponseEntity<List<Transferencia>> getTransferencias(@RequestParam Long idConta,@RequestParam Optional<String> dataInicio,
+        @RequestParam Optional<String> dataFim, @RequestParam Optional<String> nome) {
             
         List<Transferencia> transferencias = this.transferenciaService
-                                            .getTransferenciasPaginadas(idConta, dataTransferencia, nome);
+                                            .getTransferenciasPaginadas(idConta, dataInicio, dataFim, nome);
 
         return new ResponseEntity<List<Transferencia>>(transferencias, HttpStatus.OK);
     }

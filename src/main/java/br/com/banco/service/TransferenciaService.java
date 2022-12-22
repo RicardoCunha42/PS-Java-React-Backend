@@ -1,6 +1,6 @@
 package br.com.banco.service;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -17,16 +17,20 @@ import br.com.banco.repository.TransferenciaRepository;
 public class TransferenciaService {
     @Autowired
     TransferenciaRepository transferenciaRepository;
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
     public List<Transferencia> getTransferenciasPaginadas(Long idConta, 
-        Optional<String> dataTransferencia, Optional<String> nome) {
+        Optional<String> dataInicio, Optional<String> dataFim, Optional<String> nome) {
 
-            LocalDate date = null;
-            if(dataTransferencia.isPresent()){
-                String data = dataTransferencia.get();
-                date = LocalDate.parse(data, formatter);
-                
+            boolean datasPresentes = false;
+            OffsetDateTime dataInicial = null;
+            OffsetDateTime dataFinal = null;
+            if(dataInicio.isPresent() && dataFim.isPresent()){
+                String data1 = dataInicio.get() + "T00:00:00+03:00";
+                String data2 = dataFim.get() + "T23:59:59+03:00";
+                dataInicial = OffsetDateTime.parse(data1, formatter);
+                dataFinal = OffsetDateTime.parse(data2, formatter);
+                datasPresentes = true;
             }
 
             String nomeOperador = null;
@@ -38,13 +42,13 @@ public class TransferenciaService {
             PageRequest paginacao = PageRequest.of(0, 5, sort);
 
             List<Transferencia> transferencias = null;
-            if(dataTransferencia.isPresent() && nome.isPresent()) {
-                transferencias = this.transferenciaRepository.findByIdContaDataNome(idConta, date, nomeOperador, paginacao);
+            if(datasPresentes && nome.isPresent()) {
+                transferencias = this.transferenciaRepository.findByIdContaDataNome(idConta, dataInicial, dataFinal, nomeOperador, paginacao);
 
-            } else if (dataTransferencia.isPresent() && nome.isEmpty()){
-                transferencias = this.transferenciaRepository.findByIdContaData(idConta, date, paginacao);
+            } else if (datasPresentes && nome.isEmpty()){
+                transferencias = this.transferenciaRepository.findByIdContaData(idConta, dataInicial, dataFinal, paginacao);
 
-            } else if (dataTransferencia.isEmpty() && nome.isPresent()){
+            } else if (!datasPresentes && nome.isPresent()){
                 transferencias = this.transferenciaRepository.findByIdContaNome(idConta, nomeOperador, paginacao);
                 
             } else {
