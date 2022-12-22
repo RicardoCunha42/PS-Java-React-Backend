@@ -1,10 +1,7 @@
 package br.com.banco.model;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-
+import java.time.OffsetDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -28,8 +25,7 @@ public class Transferencia {
     private Long idTransferencia;
 
     @Column(name = "data_transferencia")
-    private ZonedDateTime dataTransferencia = ZonedDateTime.ofInstant(Instant.now()
-        , ZoneId.of("America/Sao_Paulo"));
+    private OffsetDateTime dataTransferencia;
     
     @Column(precision = 20, scale = 2, nullable = false)
     private BigDecimal valor;
